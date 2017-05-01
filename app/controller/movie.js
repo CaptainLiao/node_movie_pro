@@ -1,4 +1,5 @@
 let Movie = require('../models/movie');
+let Comment = require('../models/comment');
 let _ = require('underscore');
 
 // movie控制器
@@ -8,12 +9,21 @@ let _ = require('underscore');
 
     Movie.findById(id, (err, movie) => {
       if(err) throw new Error(err)
-      res.render('detail', {
-        title: '豆瓣電影 '+ movie.title,
-        movie: movie
+        Comment.find({movie: id}) 
+          .populate('from', 'username')
+          .populate('reply.from reply.to', 'username')
+          .exec((err, comments) => {
+            console.log(comments);
+          
+            res.render('detail', {
+              title: '豆瓣電影 '+ movie.title,
+              movie: movie,
+              comments: comments
+          })
       })
     })
   };
+
 
   // admin update movie
   exports.update = function(req, res) {

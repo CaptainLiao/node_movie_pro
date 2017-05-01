@@ -27,23 +27,21 @@ exports.showSignup = (req, res) => {
   // 注册
   exports.signup = (req, res) => {
     let _user = req.body.user;
-    let user = new User(_user);
-
-    User.find({username: _user.username}, (err, user) => {
+   
+    User.find({username: _user.username}, (err, userInfo) => {
       if(err) return console.log(err);
 
-      if(user.length > 0) {
+      if(userInfo.length > 0) {
         res.redirect('/signin');
       } else {
+        let user = new User(_user);
         user.save((err, user) => {
           if(err) return console.log(err);
-
-          res.redirect('/admin/userList');
+          res.redirect('/');
         })
       }
     });
   };
-
   // 登录
   exports.signin = (req, res) => {
     let _user = req.body.user;

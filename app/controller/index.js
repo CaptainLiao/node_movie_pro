@@ -1,6 +1,7 @@
 
 // 首页路由控制器
 let Movie = require('../models/movie');
+let Category = require('../models/category');
 
 exports.index = (req, res) => {
   console.log('user in session: ');
