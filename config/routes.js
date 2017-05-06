@@ -2,6 +2,7 @@ let Index = require('../app/controller/index')
 let Movie = require('../app/controller/movie')
 let User = require('../app/controller/user')
 let Comment = require('../app/controller/comment')
+let Category = require('../app/controller/category')
 
 module.exports = function(app) {
   // 预处理session
@@ -35,4 +36,9 @@ module.exports = function(app) {
 
   // comment
   app.post('/user/comment', User.signinRequired, Comment.save);
+
+  // category
+  app.get('/admin/category/new', User.signinRequired, User.adminRequired, Category.new)
+  app.post('/admin/category', User.signinRequired, User.adminRequired, Category.save);
+  app.get('/admin/category/list', User.signinRequired, User.adminRequired, Category.list);
 }

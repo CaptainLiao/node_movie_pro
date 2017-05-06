@@ -1,4 +1,5 @@
 let Movie = require('../models/movie');
+let Category = require('../models/category')
 let Comment = require('../models/comment');
 let _ = require('underscore');
 
@@ -32,12 +33,16 @@ let _ = require('underscore');
 
     if(id) {
       Movie.findById(id, (err, movie) => {
-        if(err) console.log(err)
-        res.render('admin', {
-          title: '豆瓣電影後臺更新頁',
-          movie: movie
+  
+        Category.find({}, (err, categories) => {
+          if(err) console.log(err)
+          res.render('admin', {
+            title: '豆瓣電影後臺更新頁',
+            movie: movie,
+            categories: categories
+          })
         })
-      })
+      })  
     }
   };
 
@@ -51,36 +56,33 @@ let _ = require('underscore');
     console.log(movieObj);
     console.log('id= '+id);
 
-    if(id !== 'undefined') {
+    if(id) {
       Movie.findById(id, (err, movie) => {
         if(err) return console.log(err)
 
         _movie = _.extend(movie, movieObj);
         _movie.save(function(err, movie) {
           if(err) console.log(err);
-          res.redirect('/admin/list')
+          res.redirect('/admin/movie/list')
           //res.redirect('/movie/' +movie._id)
         })
       })
     } else {
-      _movie = new Movie({
-        doctor: movieObj.doctor,
-        title: movieObj.title,
-        country: movieObj.country,
-        language: movieObj.language,
-        year: movieObj.year,
-        poster: movieObj.poster,
-        summary: movieObj.summary,
-        flash: movieObj.flash,
-      });
+      _movie = new Movie(movieObj);
+
+      let categoryId = _movie.category;
 
       _movie.save(function(err, movie) {
         if(err) console.log(err);
 
-        res.redirect('/admin/list')
+        Category.findById(categoryId, (err, category) => {
+          category.movies.push(movie._id);
+          category.save((err, category) => {
+             res.redirect('/admin/movie/list');
+          })
+        })   
       })
     }
-
   };
 
   // list 列表页
@@ -96,19 +98,23 @@ let _ = require('underscore');
 
   // admin 后台
   exports.new = (req, res) => {
-    res.render('admin', {
-      title: '电影后台',
-      movie: {
-        title: '',
-        doctor: '',
-        country: '',
-        year: '',
-        poster: '',
-        flash: '',
-        summary: '',
-        language: '',
-      }
+    Category.find({}, (err, categories) => {
+      res.render('admin', {
+        title: '电影后台',
+        categories: categories,
+        movie: {
+          title: '',
+          doctor: '',
+          country: '',
+          year: '',
+          poster: '',
+          flash: '',
+          summary: '',
+          language: '',
+        }
+      })
     })
+
   };
 
   // delete admin movie list

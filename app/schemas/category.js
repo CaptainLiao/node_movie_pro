@@ -7,7 +7,7 @@ let mongoose = require('mongoose')
 let Schema = mongoose.Schema;
 let ObjectId = Schema.Types.ObjectId;
 
-let MovieSchema = new Schema({
+let CategorySchema = new Schema({
   name: String,
   // 电影的ObjectId
   movies: [{
@@ -26,7 +26,7 @@ let MovieSchema = new Schema({
   }
 })
 
-MovieSchema.pre('save', function(next) {
+CategorySchema.pre('save', function(next) {
   if(this.isNew) {
     this.meta.update = this.meta.createAt = Date.now();
   } else {
@@ -36,7 +36,7 @@ MovieSchema.pre('save', function(next) {
   next();
 })
 
-MovieSchema.statics = {
+CategorySchema.statics = {
   fetch: function(cb) {
     return this.find({})
       .sort('meta.updateAt')
@@ -49,4 +49,4 @@ MovieSchema.statics = {
   }
 }
 
-module.exports = MovieSchema;
+module.exports = CategorySchema;

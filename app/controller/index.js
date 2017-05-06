@@ -3,15 +3,17 @@
 let Movie = require('../models/movie');
 let Category = require('../models/category');
 
+// index page
 exports.index = (req, res) => {
-  console.log('user in session: ');
-  console.log(req.session.user);
+  Category
+    .find({})
+    .populate({path: 'movie', options: {limit: 5}})
+    .exec((err, categories) => {
+      if(err) throw new Error(err);
 
-  Movie.fetch((err, movies) => {
-    if(err) throw new Error(err)
-    res.render('index', {
-      title: '電影首頁',
-      movies: movies
+      res.render('index', {
+        title: '電影首頁',
+        categories: categories
+      })
     })
-  })
 }
